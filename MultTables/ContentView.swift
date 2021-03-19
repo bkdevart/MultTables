@@ -34,6 +34,7 @@ struct Question {
 }
 
 struct GamePlay: View {
+    
     var body: some View {
         Text("Game")
             .font(.largeTitle)
@@ -45,11 +46,20 @@ struct GamePlay: View {
 }
 
 struct Settings: View {
-    @Binding var gameActive: Bool
-    @Binding var maxNumMultiplied: Int
-    @Binding var numQuestions: [String]
-    @Binding var numQuestionChosen: String
-    @Binding var questions: [Question]
+    var gameActive: Bool
+    @State var maxNumMultiplied = 6
+    var numQuestions: [String]
+    var numQuestionChosen: String
+//    var questions: [Question]
+    
+    init(gameActive: Bool, numQuestions: [String], numQuestionChosen: String) {
+        self.gameActive = gameActive
+        self.numQuestions = numQuestions
+        self.numQuestionChosen = numQuestionChosen
+//        self.questions = questions
+    }
+    
+    
     
     var body: some View {
         // settings view
@@ -61,6 +71,7 @@ struct Settings: View {
                         .background(Color.blue)
                         .clipShape(Capsule())
                         .font(.headline)
+                        .foregroundColor(.white)
                 }
                 Text("Number of games")
                     .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
@@ -77,7 +88,8 @@ struct Settings: View {
                 }
                 Spacer()
                 Button("Start", action: {
-                    gameStart(topNum: maxNumMultiplied, gameNum: numQuestionChosen)
+//                    questions = generateQuestions(topNum: maxNumMultiplied, gameNum: numQuestionChosen)
+//                    gameActive = true
                 })
                 .padding()
                 .background(/*@START_MENU_TOKEN@*//*@PLACEHOLDER=View@*/Color.blue/*@END_MENU_TOKEN@*/)
@@ -90,18 +102,17 @@ struct Settings: View {
         }
     }
     
-    func gameStart(topNum: Int, gameNum: String) {
-        
-        // convert topNum to int
-        questions = generateQuestions(topNum: topNum, gameNum: gameNum)
-    }
+//    func gameStart(topNum: Int, gameNum: String) {
+//
+//        // convert topNum to int
+//        questions = generateQuestions(topNum: topNum, gameNum: gameNum)
+//    }
     
     func generateQuestions(topNum: Int, gameNum: String) -> [Question] {
         // TODO build in logic for generating questions w/ topNum & gameNum
         let questionText = "1 x 1 = "
         let answer = 1
         let questions = [Question(questionText: questionText, answer: answer)]
-        gameActive = true
         return questions
     }
 }
@@ -110,7 +121,6 @@ struct Settings: View {
 struct ContentView: View {
     @State var gameActive = false
     @State var questions = [Question]()
-    @State var maxNumMultiplied = 6
     @State var numQuestions = ["5", "10", "20", "All"]
     @State var numQuestionChosen = "5"
 
@@ -120,7 +130,7 @@ struct ContentView: View {
                 if gameActive {
                     GamePlay()
                 } else {
-                    Settings(gameActive: gameActive, maxNumMultiplied: maxNumMultiplied, numQuestions: numQuestions, numQuestionChosen: numQuestionChosen, questions: questions)
+                    Settings(gameActive: gameActive, numQuestions: numQuestions, numQuestionChosen: numQuestionChosen)
                 }
             }
         }
