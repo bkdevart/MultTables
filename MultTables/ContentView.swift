@@ -34,14 +34,25 @@ struct Question {
 }
 
 struct GamePlay: View {
+    var questions: [Question]
+    
+    init(questions: [Question]) {
+        self.questions = questions
+    }
     
     var body: some View {
         Text("Game")
             .font(.largeTitle)
             .padding()
-            // .foregroundColor(.white)  // remove to apply custom to instances
+            .foregroundColor(.white)
             .background(Color.blue)
             .clipShape(Capsule())
+        // TODO make loop that displays each question and has user entry
+        ForEach(0 ..< questions.count) { question in
+            List {
+                Text(questions[question].questionText)
+            }
+        }
     }
 }
 
@@ -92,20 +103,6 @@ struct Settings: View {
             .padding()
         }
     }
-    
-//    func gameStart(topNum: Int, gameNum: String) {
-//
-//        // convert topNum to int
-//        questions = generateQuestions(topNum: topNum, gameNum: gameNum)
-//    }
-    
-    func generateQuestions(topNum: Int, gameNum: String) -> [Question] {
-        // TODO build in logic for generating questions w/ topNum & gameNum
-        let questionText = "1 x 1 = "
-        let answer = 1
-        let questions = [Question(questionText: questionText, answer: answer)]
-        return questions
-    }
 }
 
 
@@ -114,17 +111,26 @@ struct ContentView: View {
     @State var questions = [Question]()
     @State var numQuestions = ["5", "10", "20", "All"]
     @State var numQuestionChosen = "5"
-
-    var gameState: some View {
+    @State var maxNumMultiplied = 6
+    
+    func generateQuestions(topNum: Int, gameNum: String) -> [Question] {
+        // TODO build in logic for generating questions w/ topNum & gameNum
+        let questionText = "1 x 1 = "
+        let answer = 1
+        let questions = [Question(questionText: questionText, answer: answer)]
+        return questions
+    }
+    
+    var body: some View {
         Group {
             VStack {
                 if gameActive {
-                    GamePlay()
+                    GamePlay(questions: questions)
                 } else {
                     Settings(gameActive: gameActive, numQuestions: numQuestions, numQuestionChosen: numQuestionChosen)
                 }
                 Button(gameActive ? "Settings" : "Start", action: {
-//                    questions = generateQuestions(topNum: maxNumMultiplied, gameNum: numQuestionChosen)
+                    questions = generateQuestions(topNum: maxNumMultiplied, gameNum: numQuestionChosen)
                     gameActive.toggle()
                 })
                 .padding()
@@ -134,10 +140,6 @@ struct ContentView: View {
                 .font(.headline)
             }
         }
-    }
-    
-    var body: some View {
-        gameState
     }
 }
 
