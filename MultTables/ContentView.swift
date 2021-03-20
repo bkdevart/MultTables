@@ -87,15 +87,6 @@ struct Settings: View {
                     }
                 }
                 Spacer()
-                Button("Start", action: {
-//                    questions = generateQuestions(topNum: maxNumMultiplied, gameNum: numQuestionChosen)
-//                    gameActive = true
-                })
-                .padding()
-                .background(/*@START_MENU_TOKEN@*//*@PLACEHOLDER=View@*/Color.blue/*@END_MENU_TOKEN@*/)
-                .foregroundColor(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-                .font(.headline)
             }
             .navigationBarTitle("Settings")
             .padding()
@@ -132,6 +123,15 @@ struct ContentView: View {
                 } else {
                     Settings(gameActive: gameActive, numQuestions: numQuestions, numQuestionChosen: numQuestionChosen)
                 }
+                Button(gameActive ? "Settings" : "Start", action: {
+//                    questions = generateQuestions(topNum: maxNumMultiplied, gameNum: numQuestionChosen)
+                    gameActive.toggle()
+                })
+                .padding()
+                .background(/*@START_MENU_TOKEN@*//*@PLACEHOLDER=View@*/Color.blue/*@END_MENU_TOKEN@*/)
+                .foregroundColor(.white)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .font(.headline)
             }
         }
     }
