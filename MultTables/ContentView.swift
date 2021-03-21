@@ -75,19 +75,16 @@ struct Settings: View {
     @State var maxNumMultiplied = 6
     var numQuestions: [String]
     var numQuestionChosen: String
-//    var questions: [Question]
     
     init(gameActive: Bool, numQuestions: [String], numQuestionChosen: String) {
         self.gameActive = gameActive
         self.numQuestions = numQuestions
         self.numQuestionChosen = numQuestionChosen
-//        self.questions = questions
     }
     
     
     
     var body: some View {
-        // settings view
         NavigationView {
             VStack {
                 Stepper(value: $maxNumMultiplied) {
@@ -98,14 +95,13 @@ struct Settings: View {
                         .font(.headline)
                         .foregroundColor(.white)
                 }
-                Text("Number of games")
+                Text("Number of questions")
                     .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
                     .fontWeight(.bold)
                 HStack {
                     ForEach(0..<4) { number in
                         Button(action: {
                             print("Tapped \(numQuestions[number])")
-//                            numQuestions = numQuestions[number]
                         }) {
                             Text(numQuestions[number])
                                 .settingButtonStyle()
@@ -128,18 +124,20 @@ struct ContentView: View {
     @State var maxNumMultiplied = 6
     
     func generateQuestions() -> [Question] {
-        var playQuestions = [Question]()
-        // TODO build in logic for generating questions w/ topNum & gameNum
+        var questions = [Question]()
+        // TODO build in logic for generating questions w/ numQuestionChosen
         for firstValue in 1 ... maxNumMultiplied {
             for secondValue in 1 ... maxNumMultiplied {
                 let questionText = "\(String(firstValue)) x \(String(secondValue))"
                 let answer = firstValue * secondValue
                 let question = Question(questionText: questionText, answer: answer)
-                playQuestions.append(question)
+                questions.append(question)
             }
         }
+        questions = questions.shuffled()
+        questions = Array(questions[0 ..< 5])
         
-        return playQuestions
+        return questions
     }
     
     var body: some View {
