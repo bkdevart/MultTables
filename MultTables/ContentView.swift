@@ -26,8 +26,6 @@ extension View {
     }
 }
 
-
-// question
 struct Question {
     let questionText: String
     let answer: Int
@@ -35,9 +33,19 @@ struct Question {
 
 struct GamePlay: View {
     var questions: [Question]
+    @State var userAnswer = ""
     
     init(questions: [Question]) {
         self.questions = questions
+    }
+    
+    func checkAnswer(answer: Int) {
+        // check if userAnswer is correct
+        if Int(userAnswer) == answer {
+            print("Right!")
+        } else {
+            print("Wrong!")
+        }
     }
     
     var body: some View {
@@ -47,12 +55,19 @@ struct GamePlay: View {
             .foregroundColor(.white)
             .background(Color.blue)
             .clipShape(Capsule())
-        // TODO make loop that displays each question and has user entry
         ForEach(0 ..< questions.count) { question in
             List {
                 Text(questions[question].questionText)
+                TextField("Enter your answer", text: $userAnswer)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .autocapitalization(.none)
+                    .padding()
+                Button("Submit Answer", action: {
+                     checkAnswer(answer: questions[question].answer)
+                })
             }
         }
+        
     }
 }
 
@@ -115,6 +130,7 @@ struct ContentView: View {
     
     func generateQuestions(topNum: Int, gameNum: String) -> [Question] {
         // TODO build in logic for generating questions w/ topNum & gameNum
+        
         let questionText = "1 x 1 = "
         let answer = 1
         let questions = [Question(questionText: questionText, answer: answer)]
