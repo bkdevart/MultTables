@@ -48,6 +48,10 @@ struct GamePlay: View {
         }
     }
     
+    func pickQuestion(questions: [Question], currentQuestion: Int) -> Question {
+        return questions[currentQuestion]
+    }
+    
     var body: some View {
         Text("Game")
             .font(.largeTitle)
@@ -55,9 +59,11 @@ struct GamePlay: View {
             .foregroundColor(.white)
             .background(Color.blue)
             .clipShape(Capsule())
+        
         List {
             ForEach(0 ..< questions.count) { question in
-                Text(questions[question].questionText)
+                Text(pickQuestion(questions: questions, currentQuestion: question).questionText)
+//                Text(questions[question].questionText)
                 TextField("Enter your answer", text: $userAnswer)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .autocapitalization(.none)
