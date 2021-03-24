@@ -32,11 +32,29 @@ struct Question {
 }
 
 struct GamePlay: View {
-    var questions: [Question]
-    @State var userAnswer = ""
+    @State private var userAnswer = ""
+    var questions = [Question]()
+    var maxNumMultiplied: Int
     
-    init(questions: [Question]) {
-        self.questions = questions
+    init(maxNumMultiplied: Int) {
+        self.maxNumMultiplied = maxNumMultiplied
+//        self.questions = [Question]()
+        generateQuestions(maxNumMultiplied: self.maxNumMultiplied)
+    }
+    
+    mutating func generateQuestions(maxNumMultiplied: Int) {
+//        var newQuestions = [Question]()
+        // TODO build in logic for generating questions w/ numQuestionChosen
+        for firstValue in 1 ... maxNumMultiplied {
+            for secondValue in 1 ... maxNumMultiplied {
+                let questionText = "\(String(firstValue)) x \(String(secondValue))"
+                let answer = firstValue * secondValue
+                let question = Question(questionText: questionText, answer: answer)
+                questions.append(question)
+            }
+        }
+        questions = questions.shuffled()
+        questions = Array(self.questions[0 ..< 5])
     }
     
     func checkAnswer(answer: Int) {
@@ -129,29 +147,12 @@ struct ContentView: View {
     @State var numQuestionChosen = "5"
     @State var maxNumMultiplied = 6
     
-    func generateQuestions() -> [Question] {
-        var questions = [Question]()
-        // TODO build in logic for generating questions w/ numQuestionChosen
-        for firstValue in 1 ... maxNumMultiplied {
-            for secondValue in 1 ... maxNumMultiplied {
-                let questionText = "\(String(firstValue)) x \(String(secondValue))"
-                let answer = firstValue * secondValue
-                let question = Question(questionText: questionText, answer: answer)
-                questions.append(question)
-            }
-        }
-        questions = questions.shuffled()
-        questions = Array(questions[0 ..< 5])
-        
-        return questions
-    }
-    
     var body: some View {
 
         Group {
             VStack {
                 if gameActive {
-                    GamePlay(questions: generateQuestions())
+                    GamePlay(maxNumMultiplied: maxNumMultiplied)
                 } else {
                     Settings(gameActive: gameActive, numQuestions: numQuestions, numQuestionChosen: numQuestionChosen)
                 }
