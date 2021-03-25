@@ -33,17 +33,18 @@ struct Question {
 
 struct GamePlay: View {
     @State private var userAnswer = ""
+    @State private var questionNum = 0
     var questions = [Question]()
     var maxNumMultiplied: Int
+    var numQuestionChosen: String
     
-    init(maxNumMultiplied: Int) {
+    init(maxNumMultiplied: Int, numQuestionChosen: String) {
         self.maxNumMultiplied = maxNumMultiplied
-//        self.questions = [Question]()
+        self.numQuestionChosen = numQuestionChosen
         generateQuestions(maxNumMultiplied: self.maxNumMultiplied)
     }
     
     mutating func generateQuestions(maxNumMultiplied: Int) {
-//        var newQuestions = [Question]()
         // TODO build in logic for generating questions w/ numQuestionChosen
         for firstValue in 1 ... maxNumMultiplied {
             for secondValue in 1 ... maxNumMultiplied {
@@ -54,7 +55,11 @@ struct GamePlay: View {
             }
         }
         questions = questions.shuffled()
-        questions = Array(self.questions[0 ..< 5])
+        var totalQuestions = Int(numQuestionChosen) ?? questions.count
+        if totalQuestions > questions.count {
+            totalQuestions = questions.count
+        }
+        questions = Array(self.questions[0 ..< totalQuestions])  // use settings #
     }
     
     func checkAnswer(answer: Int) {
@@ -66,47 +71,49 @@ struct GamePlay: View {
         }
     }
     
-    func pickQuestion(questions: [Question], currentQuestion: Int) -> Question {
-        return questions[currentQuestion]
+    func pickQuestion() -> Question {
+        if questionNum  < questions.count {
+            let nextQuestion = questions[questionNum]
+            return nextQuestion
+        } else {
+            let endGame = Question(questionText: "Game Over", answer: 0)
+            return endGame
+        }
     }
     
     var body: some View {
-        Text("Game")
-            .font(.largeTitle)
-            .padding()
-            .foregroundColor(.white)
-            .background(Color.blue)
-            .clipShape(Capsule())
-        
-        List {
-            ForEach(0 ..< questions.count) { question in
-                Text(pickQuestion(questions: questions, currentQuestion: question).questionText)
-//                Text(questions[question].questionText)
+        NavigationView {
+            VStack {
+                Text(pickQuestion().questionText)
+                    .bold()
+                    .fontWeight(.heavy)
+                    .font(.headline)
+                
                 TextField("Enter your answer", text: $userAnswer)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .autocapitalization(.none)
                     .padding()
+                
                 Button("Submit Answer", action: {
-                     checkAnswer(answer: questions[question].answer)
+                    checkAnswer(answer: questions[questionNum].answer)
+                    questionNum += 1
                 })
+                    .font(.largeTitle)
+                    .padding()
+                    .foregroundColor(.white)
+                    .background(Color.blue)
+                    .clipShape(Capsule())
             }
+            .navigationBarTitle("Game")
+            .padding()
         }
     }
 }
 
 struct Settings: View {
-    var gameActive: Bool
-    @State var maxNumMultiplied = 6
-    var numQuestions: [String]
-    var numQuestionChosen: String
-    
-    init(gameActive: Bool, numQuestions: [String], numQuestionChosen: String) {
-        self.gameActive = gameActive
-        self.numQuestions = numQuestions
-        self.numQuestionChosen = numQuestionChosen
-    }
-    
-    
+    @Binding var maxNumMultiplied: Int
+    @Binding var numQuestionChosen: String
+    @State var numQuestions = ["5", "10", "20", "All"]
     
     var body: some View {
         NavigationView {
@@ -142,19 +149,18 @@ struct Settings: View {
 
 
 struct ContentView: View {
-    @State var gameActive = false
-    @State var numQuestions = ["5", "10", "20", "All"]
-    @State var numQuestionChosen = "5"
     @State var maxNumMultiplied = 6
+    @State var numQuestionChosen = "5"
+    @State var gameActive = false
     
     var body: some View {
 
         Group {
             VStack {
                 if gameActive {
-                    GamePlay(maxNumMultiplied: maxNumMultiplied)
+                    GamePlay(maxNumMultiplied: maxNumMultiplied, numQuestionChosen: numQuestionChosen)
                 } else {
-                    Settings(gameActive: gameActive, numQuestions: numQuestions, numQuestionChosen: numQuestionChosen)
+                    Settings(maxNumMultiplied: $maxNumMultiplied, numQuestionChosen: $numQuestionChosen)
                 }
                 Button(gameActive ? "Settings" : "Start", action: {
                     gameActive.toggle()
